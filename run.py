@@ -3,13 +3,15 @@ import time
 import random
 import string
 from commit_generator import commit_generator
+import sys
 
 def set_number_of_commits():
     return random.randint(5, 25)
 
+
 def alter_file():
-    file_path = 'alterable_file.py'
     # Read the content of the file
+    file_path = 'alterable_file.py'
 
     # Make your alterations to the content (replace 'old_content' with your specific changes)
     random_content = ''.join(random.choice(
@@ -37,6 +39,7 @@ def schedule_random_daily():
 
     print(
         f"Function scheduled to run at {random_hour:02d}:{random_minute:02d} every day.")
+
 
 if __name__ == "__main__":
     while True:
