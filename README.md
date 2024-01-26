@@ -6,7 +6,7 @@ To run GitBot, follow these simple steps:
 
 1. Fork the Repo: Start by forking this repository to your GitHub account.
 
-2. Create .env file: Create a .env file in the root of your project with the following variables:
+2. Create .env file: Create a .env file in the root of your project with the following variables: (Make sure to replace the placeholder values with your actual GitHub username, personal access token, and repository details.)
 
 ```env
 GITHUB_USERNAME=your_github_username
@@ -15,7 +15,6 @@ REPO_OWNER=owner_of_the_repository
 REPO_NAME=name_of_the_repository
 ```
 
-Make sure to replace the placeholder values with your actual GitHub username, personal access token, and repository details.
 
 3. Edit File Path: Open thecommit_generator.py and edit the file path variable (lines 29 and 40) to point to the file you want changed daily. This is the file in which the random commits will be made.
    
