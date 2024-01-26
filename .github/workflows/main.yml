@@ -9,7 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      API_KEY: ${{ secrets.API_KEY }}
+      USERNAME: ${{ secrets.USERNAME }}
+      TOKEN: ${{ secrets.TOKEN }}
+      REPO_OWNER: ${{ secrets.REPO_OWNER }}
+      REPO_NAME: ${{ secrets.REPO_NAME }}
 
     steps:
     - name: Checkout Repository
