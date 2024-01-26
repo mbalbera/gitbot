@@ -11,8 +11,8 @@ def commit_generator(num):
     load_dotenv()
 
     # GitHub credentials
-    username = os.getenv('GITHUB_USERNAME')
-    token = os.getenv('GITHUB_TOKEN')
+    username = os.getenv('USERNAME')
+    token = os.getenv('TOKEN')
 
     # Repository information
     repo_owner = os.getenv('REPO_OWNER')
