@@ -3,7 +3,6 @@ import time
 import random
 import string
 from commit_generator import commit_generator
-import sys
 
 def set_number_of_commits():
     return random.randint(5, 25)
@@ -42,12 +41,4 @@ def schedule_random_daily():
 
 
 if __name__ == "__main__":
-    while True:
-        # Pick a new random time at midnight
-        midnight = "00:00"
-        schedule.every().day.at(midnight).do(schedule_random_daily)
-
-        # Run the scheduler continuously
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
+   schedule_random_daily()
