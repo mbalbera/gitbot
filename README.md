@@ -9,8 +9,8 @@ To run GitBot, follow these simple steps:
 2. Create .env file: Create a .env file in the root of your project with the following variables: (Make sure to replace the placeholder values with your actual GitHub username, personal access token, and repository details.)
 
 ```env
-GITHUB_USERNAME=your_github_username
-GITHUB_TOKEN=your_github_personal_access_token
+USERNAME=your_github_username
+TOKEN=your_github_personal_access_token
 REPO_OWNER=owner_of_the_repository
 REPO_NAME=name_of_the_repository
 ```
