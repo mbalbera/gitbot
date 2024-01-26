@@ -20,10 +20,10 @@ REPO_NAME=name_of_the_repository
    
 5. Host and Run: Host the GitBot script on a server or use a scheduled job (e.g., cron) to run the script daily. The script will generate a random number of commits and push them to the specified repository or file.
 
-Security Note
+## Security Note
 Make sure to keep your GitHub personal access token (GITHUB_TOKEN) secure and do not share it publicly. It is recommended to use a bot account with the necessary repository access rather than your personal account.
 
-Disclaimer
+# Disclaimer
 This is a joke project! GitBot is designed for educational and entertainment purposes. Excessive commits may be considered spammy behavior on GitHub, so use it responsibly.
 
 Feel free to customize the GitBot script to suit your needs or contribute improvements to the project. Happy coding!
