@@ -17,12 +17,9 @@ REPO_NAME=name_of_the_repository
 
 Make sure to replace the placeholder values with your actual GitHub username, personal access token, and repository details.
 
-3. Edit File Path: Open the GitBot script (gitbot.py) and edit the file path variable to point to the file you want changed daily. This is the file in which the random commits will be made.
-
-```python
-FILE_PATH = 'path/to/your/file.txt'
-```
-4. Host and Run: Host the GitBot script on a server or use a scheduled job (e.g., cron) to run the script daily. The script will generate a random number of commits and push them to the specified repository or file.
+3. Edit File Path: Open thecommit_generator.py and edit the file path variable (lines 29 and 40) to point to the file you want changed daily. This is the file in which the random commits will be made.
+   
+5. Host and Run: Host the GitBot script on a server or use a scheduled job (e.g., cron) to run the script daily. The script will generate a random number of commits and push them to the specified repository or file.
 
 Security Note
 Make sure to keep your GitHub personal access token (GITHUB_TOKEN) secure and do not share it publicly. It is recommended to use a bot account with the necessary repository access rather than your personal account.
