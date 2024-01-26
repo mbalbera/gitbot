@@ -6,17 +6,25 @@ import base64
 import subprocess
 
 
+def get_environment_variable(variable_name):
+    # Check if running in GitHub Actions
+    if 'GITHUB_ACTIONS' in os.environ:
+        return os.environ.get(variable_name)
+    else:
+        # Running locally, use os.getenv()
+        return os.getenv(variable_name)
+
 def commit_generator(num):
     # Load environment variables from .env file
     load_dotenv()
 
     # GitHub credentials
-    username = os.getenv('USERNAME')
-    token = os.getenv('TOKEN')
+    username = get_environment_variable('USERNAME')
+    token = get_environment_variable('TOKEN')
 
     # Repository information
-    repo_owner = os.getenv('REPO_OWNER')
-    repo_name = os.getenv('REPO_NAME')
+    repo_owner = get_environment_variable('REPO_OWNER')
+    repo_name = get_environment_variable('REPO_NAME')
 
     # API endpoint
     url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/git/refs/heads/main'
