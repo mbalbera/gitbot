@@ -3,6 +3,7 @@ name: GitBot Daily Commits
 on:
   schedule:
     - cron: '0 0 * * *'  # Run every day at midnight UTC
+  workflow_dispatch: # Manually run workflow
 
 jobs:
   run-gitbot:
