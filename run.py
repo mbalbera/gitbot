@@ -21,7 +21,9 @@ def alter_file():
         file.write(random_content)
 
 def change_and_commit():
+    print("testing testing 123")
     num = set_number_of_commits()
+    print("num commits: ", num)
     for i in range(num):
         alter_file()
         commit_generator(i+1)
