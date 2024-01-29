@@ -41,4 +41,5 @@ def schedule_random_daily():
 
 
 if __name__ == "__main__":
-   schedule_random_daily()
+#    schedule_random_daily()
+   change_and_commit()
