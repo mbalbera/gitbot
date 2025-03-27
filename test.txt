@@ -1,40 +1,34 @@
 from fastapi import FastAPI, File, UploadFile
 from docx import Document
-import json
-from typing import List, Dict
+from io import BytesIO
+from typing import Dict
 
 app = FastAPI()
 
-def parse_docx(file_path: str) -> Dict:
+def parse_docx(file_bytes: bytes) -> Dict:
     """Extract text and tables from a Word document and return as JSON."""
-    doc = Document(file_path)
-    
-    # Extract text
-    text_content = [para.text for para in doc.paragraphs if para.text.strip()]
+    doc = Document(BytesIO(file_bytes))  # Correctly load DOCX from memory
+
+    # Extract text content
+    text_content = [para.text.strip() for para in doc.paragraphs if para.text.strip()]
 
     # Extract tables
     tables = []
     for table in doc.tables:
         table_data = []
         for row in table.rows:
-            table_data.append([cell.text.strip() for cell in row.cells])
+            row_data = [cell.text.strip() for cell in row.cells]
+            table_data.append(row_data)
         tables.append(table_data)
 
-    return {
-        "text": text_content,
-        "tables": tables
-    }
+    return {"text": text_content, "tables": tables}
 
 @app.post("/upload-doc/")
 async def upload_doc(file: UploadFile = File(...)):
     """API endpoint to receive a Word document, extract content, and return JSON."""
-    file_path = f"temp_{file.filename}"
-    
-    # Save the uploaded file
-    with open(file_path, "wb") as buffer:
-        buffer.write(file.file.read())
+    file_bytes = await file.read()  # Read file content as bytes
 
-    # Parse the document
-    doc_content = parse_docx(file_path)
+    # Parse document content
+    doc_content = parse_docx(file_bytes)
 
     return {"filename": file.filename, "content": doc_content}
