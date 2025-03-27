@@ -1,52 +1,40 @@
-prompt = f"""
-### Task:  
-Provide all relevant information to construct an SQL query based on the user's request.
+from fastapi import FastAPI, File, UploadFile
+from docx import Document
+import json
+from typing import List, Dict
 
----
+app = FastAPI()
 
-### Instructions:
+def parse_docx(file_path: str) -> Dict:
+    """Extract text and tables from a Word document and return as JSON."""
+    doc = Document(file_path)
+    
+    # Extract text
+    text_content = [para.text for para in doc.paragraphs if para.text.strip()]
 
-1. **Identify Relevant Data:**
-   - Look for any terms, concepts, or topics in the user’s query that can be mapped to tables, columns, or relationships in the database schema.
-   - For time-based queries referring to 'this year' or 'current year', assume the year is **2025** and reflect that in the SQL query.
+    # Extract tables
+    tables = []
+    for table in doc.tables:
+        table_data = []
+        for row in table.rows:
+            table_data.append([cell.text.strip() for cell in row.cells])
+        tables.append(table_data)
 
-2. **Generate SQL Query:**
-   - Use the identified data to generate the most accurate SQL query possible.
-   - If the query asks for an aggregate (e.g., SUM, AVG, COUNT, MIN, MAX, etc.), include that in the SQL query.
-   - If an exact match to an SQL query cannot be found, use a similar example and substitute the terms in the query to fit the user's request.
-   - When searching for text-based data, always use the **LIKE** operator (instead of =), except when matching an **ID**.
-   - Use **SELECT * ** instead of listing specific columns, unless instructed otherwise.
+    return {
+        "text": text_content,
+        "tables": tables
+    }
 
-3. **Join Operations:**
-   - Use either **INNER JOIN** or **LEFT JOIN** depending on the context of the query and the relationships between tables. 
+@app.post("/upload-doc/")
+async def upload_doc(file: UploadFile = File(...)):
+    """API endpoint to receive a Word document, extract content, and return JSON."""
+    file_path = f"temp_{file.filename}"
+    
+    # Save the uploaded file
+    with open(file_path, "wb") as buffer:
+        buffer.write(file.file.read())
 
-4. **Date Handling:**
-   - Assume all date formats in the query are **YYYY-MM-DD** (ISO 8601).
-   - Ensure the query accounts for case-insensitivity, using the **LIKE** operator to match strings regardless of case.
+    # Parse the document
+    doc_content = parse_docx(file_path)
 
-5. **Normalization Assumption:**
-   - Assume the database schema follows **strict normalization**, with clear relationships between tables and minimal redundancy.
-
----
-
-### Fallback:
-
-If there isn't enough information to generate a usable SQL query, respond with a clear and polite explanation, addressing the following:
-
-- **Unfamiliar Terms:** Is there a term in the user’s question that you don’t understand? If so, ask for clarification.
-- **Vague Request:** Is the user’s query too vague or lacking specific details (e.g., missing table/column names or insufficient context)?
-- **Access Issues:** Do you lack the necessary information (e.g., access to the correct database schema) to generate a query?
-- **Unclear Intent:** Is the user's intent unclear? What part of the question needs further explanation to generate an accurate query?
-- **Conflicting Information:** Are there contradictions in the query that prevent you from creating a valid SQL query?
-
-### Response:
-- Provide a concise, polite explanation of why you cannot generate a query.
-- Offer helpful suggestions for how the user can provide more specific details (e.g., "Could you clarify which tables or columns you're referring to?").
-
----
-
-### Example Response Format:
-
-**Generated SQL Query:**
-```sql
-SELECT * FROM table_name WHERE column_name LIKE 'value%';
+    return {"filename": file.filename, "content": doc_content}
