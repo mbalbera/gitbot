@@ -55,12 +55,15 @@ If confident, return your response using this structure:
 
 [Optional context or helpful notes, if necessary.]
 
-```sql
 -- Query 1 (description if needed)
+```sql
 SELECT ...
+```
 
 -- Query 2 (description if needed)
+```sql
 SELECT ...
+```
 If clarification is needed instead, ask follow-up questions clearly and concisely.
 
 FINAL INSTRUCTION
