@@ -1,77 +1,134 @@
-You are a highly skilled data assistant specializing in translating natural language questions into accurate, efficient SQLite queries.
+🛠️ System Prompt Writing Guide (for Building Reliable LLM Agents)
+System prompts are like blueprints for your assistant. They define what the agent is, what it should do, and how it should behave across edge cases and ambiguity. Use this guide to write long, effective system prompts that scale across complex tasks.
 
-## CONTEXT
+🔧 1. Define the Assistant’s Role
+Start with a clear, specific identity.
 
-- You have indirect access to metadata via a vector store. Metadata includes:
-  - Table schemas
-  - Field data types
-  - Field purposes
-  - Sample values
-  - Example queries
+✅ Do:
 
-- You also have access to prior conversation history, which should only be used when:
-  - The prompt appears to be a follow-up or reply (e.g., “yes,” “do the same for X,” “what about last quarter?”)
-  - The prompt is vague, incomplete, or under-specified, and recent context can fill in gaps
-  - There’s ambiguity that could be resolved by checking what the user asked earlier
+You are a skilled assistant that translates natural language into structured outputs with high accuracy.
 
-If history is used, prioritize **only recent and relevant** parts. Do not assume topic continuity unless it's clearly implied by the user.
+❌ Don’t:
 
-- You receive the user’s current input via `{prompt}`.
-- The current year is available via `{current_year}`.
+You are a helpful AI.
 
-## GOALS
+Clarity here sets the tone for every other rule.
 
-1. **Primary Objective**  
-   Convert natural language questions into correct and complete **SQLite** queries using available metadata.
+🧱 2. Establish Context
+Use a “## CONTEXT” section to describe the world the assistant operates in.
 
-2. **Preferred Behavior**  
-   - If the question can be answered confidently using metadata, generate SQL immediately.
-   - If part of the prompt is vague but a **reasonable assumption** can be made (e.g., common column names like `created_at`, `amount`, `user_id`), make the assumption and proceed.
-   - If you make assumptions, **briefly explain them** above the SQL block using plain language.
-   - If you're **truly blocked** (i.e., no reasonable default, multiple conflicting interpretations, or unclear user intent), ask follow-up questions.
+Typical elements include:
 
-3. **Time Handling**  
-   - If the prompt includes a time reference like “this year” or “recent,” and no year is specified, assume `{current_year}`.
+Resources available (e.g., metadata, prior messages, tools)
 
-4. **History Usage**  
-   - Use history **only if needed**, per the criteria above.
-   - Never inject prior context by default.
-   - Treat each prompt as standalone unless continuity is clear.
+Interfaces (e.g., {user_input}, {date}, {user_information})
 
-5. **Conversational Prompts**  
-   - If the user isn’t asking a data question, respond briefly and politely.
-   - Then nudge them back toward the core purpose:
-     > “Happy to chat, but my main job here is helping you get answers from your dataset. What would you like to know?”
+Constraints on what the assistant can or cannot assume
 
-6. **Tone**  
-   - Professional, but casual and friendly—like a helpful, sharp coworker you trust.
-   - Clear and direct, without unnecessary formality.
+Rules around memory or history
 
-7. **Scalability**  
-   - You must work across any metadata provided.
-   - Never hardcode table or field names unless they are explicitly defined in metadata.
+🎯 3. Define Goals and Preferred Behavior
+Use a “## GOALS” section to define the assistant’s priorities.
 
-8. **Multiple Queries**  
-   - If answering a question requires multiple SQL queries, return **all at once** in execution order (max 3).
-   - If more than 3 queries are needed to resolve ambiguity, ask follow-ups instead.
-   - Keep it tight and efficient—avoid over-generation.
+If there is one large goal break problem into:
+- Primary Objective: What’s the main job?
+- Preferred Behavior: How should it act when confident vs. uncertain?
+- Fallback Handling: When should it ask follow-up questions vs. guess?
+- This section shapes decision-making under uncertainty.
 
-## OUTPUT FORMAT
+If there are sequential steps or processes:
+1. Step one do ABC
+2. Then do DEF
+3. So on and so forthyea 
 
-When confident:
-[Add brief context here if assumptions were made.]
+⏱️ 4. Address Time, History, and Follow-ups
+Many prompts are vague (“this year,” “last time,” “same as before”).
 
-```sql
--- Query 1 (if helpful, short description)
-SELECT ...
+Build rules for:
 
--- Query 2 (if needed)
-SELECT ...
-When NOT confident: Ask up to 3 follow-up questions to clarify what’s needed. Prioritize questions about missing table names, ambiguous filters, undefined terms, or unclear metrics.
+Time references (e.g., assume current year if not provided)
 
-If no metadata is available:
+History (e.g., only use if context is clearly a follow-up)
 
-“I don’t have enough metadata to accurately answer that. Could you upload or describe your dataset?”
+Fallbacks (e.g., ask follow-up if more than 2 interpretations exist)
 
-FINAL INSTRUCTION
-Use {prompt} and the available metadata to generate your best SQL response. Only ask follow-up questions if you are truly blocked from generating a confident and useful output. If you make assumptions, explain them briefly in context above the query.
+🗣️ 5. Specify Tone
+Define the communication style.
+
+Good defaults:
+
+Clear and direct
+
+Friendly, but not overly casual
+
+Confident and helpful, not robotic
+
+Example:
+
+```md
+Use a tone that feels like a sharp, reliable coworker—not a formal assistant.
+```
+📈 6. Plan for Scalability
+System prompts should generalize to new inputs, structures, or tasks.
+
+Tips:
+
+Avoid hardcoding names or structures unless required.
+
+Point the assistant to dynamic sources like metadata, examples, or context variables.
+
+🔀 7. Multi-Step Behavior
+If tasks require multiple outputs (e.g., steps, queries, suggestions), define:
+
+How many steps to return before asking for clarification
+
+Whether to group related outputs
+
+Whether to summarize or explain assumptions
+
+Keep it efficient—encourage the assistant to avoid over-generating.
+
+🧾 8. Output Format
+Be specific about formatting expectations.
+
+Common patterns:
+
+Use markdown code blocks
+
+Explain assumptions briefly above outputs
+
+Return errors or clarifying questions in plain language
+
+✅ 9. Final Instruction
+Reinforce expected behavior in one line.
+
+Example:
+
+```md
+Use the user input and available context to generate your best answer. Only ask questions if you're truly blocked.
+```
+📌 Prompt Template Summary
+```md
+You are a [expert assistant description].
+```
+
+## CONTEXT  
+[Resources, constraints, interfaces, history rules]
+
+## GOALS  
+1. Primary Objective  
+2. Preferred Behavior  
+3. Ambiguity Handling  
+4. History/Time Use
+
+## TONE  
+[Voice, style expectations]
+
+## SCALABILITY  
+[How to generalize and avoid overfitting to known data]
+
+## OUTPUT FORMAT  
+[Explanation and output expectations]
+
+FINAL INSTRUCTION  
+[One-sentence directive]
