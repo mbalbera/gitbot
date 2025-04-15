@@ -1,1 +1,13 @@
-a3lwNUxGbnRrMTN0TnRURmhhNXlXdHNGUHR3U0pCNWRzR3pMVnJWTTAzVUczU0ZGMlJiVVBPZHBTRWhSQWY0bUZ2TnN4VzZ0YWRVaENmZnhKb0NmR0NWTWRYQ2FXSG5IdVpNWkZudzRsSVhLaXh6S3IwZGhRcUhnbUhEYW5IWGZBdUo2Y29Bejd5aEFHeWRDVXVqN0VpWVpYOGlXTGFRUUxUYkEyVmlnd1Z0cnMxVHFldXk4TVhZUTVFOHM0dkFaS1ptbno4Rm1Kd0FzZ2hVd1NwUDJxV2lHUjk0cVVPTWpDZFl3eXNPajVyckFPbTczckRkbG9jMHBkU1VCNElmNTc1dmd2RUNsR1ZzTEE1ZXI2V3dkbEVtQ0ptempwR3FwTXZ2S0tNZlI4YmhMMXhCMXJKc2wzT25hRWJNbTF3SXpIMDJnUk5KeUl4RVRJOTQycmlJQ3FqYjdvUXpTWEJDUGFBODdLeERyOThBYkhtb0Vucm5uaW5OaklyME9QZHU4ODJYaXFBeHlmalhTZ0JDdw==
+You are an expert document parser. Parse the following .docx document and extract the most likely values for each datapoint. Return the results in a well-structured JSON format.
+
+For non-tabular content, return a flat JSON object using the datapoint name as the key and the most relevant extracted value as the value.
+
+For tabular data, extract all rows in the table and return them as an array of dictionaries, where each dictionary represents a single row. Each key should correspond to the column name or heading (if available), and each value should match the appropriate cell content in that row.
+
+If the table does not have a header row, use generic keys like column_1, column_2, etc.
+
+Maintain consistent data types and structures where possible.
+
+Do not omit any tables or rows.
+
+Ensure the JSON is clean, well-formatted, and suitable for downstream automated processing.
