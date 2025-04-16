@@ -32,3 +32,4 @@ for speaker, message in st.session_state.chathistory:
 if st.button("Reset Memory"):
     st.session_state.chathistory = []
     st.experimental_rerun()
+
