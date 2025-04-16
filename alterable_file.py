@@ -1,1 +1,34 @@
-VEVoS0pXWUtyU0V6Vnl2MlhYMFEzQTFyQWpDQUlxdUNhcmtkdVZMZUM1cTd2UXVLcWIyU2dta0ZCazZOWDZER0FlMjlIWmFZWGtXeUlIcE9wYjRiV3ZRUnJ5cWt6R25WNXQzV2ZRcERCVHNHU3ZBQjFZNk9wMm90SGtZZUlVTXE4Ukh5cGNCdVdtTmxySXNYdnFnNFpSWUlGOGlESnY5czcwNUlIeXA1bUdHdE9XWXoyQ1Y0SmpnY2t4QldFSnVzVGR6WG5HcGFZaFZBS3BIOU5uTWtPOHJQY2M3NnZIWElHMUpHSWlzMlRISDN0ZnRvOW1yU2xkU3ZRQTlyelUzYzFkSFJoblpFWWdVTlN6Q1NjdVQ1cGpvb0tvdUVwbUt0RXJISDdoZW5vQVdqdm9vRFRWempsVHBhRmZWd1F5QTlBZGNTMjZtalNyeDNabWJMTjJUYkI2ZmVIUGx2ZFlHclZLTjlmUTBjTXRWdWtUMVc0VG9odUpuc0d5cnJUNWtFNXZicWtoU3Q3NFRwZ3VDZw==
+import streamlit as st
+
+# Dummy response function — replace with your actual logic
+def get_chat_response(user_input):
+    return f"Echo: {user_input}"
+
+# Initialize chat history in session state
+if "chathistory" not in st.session_state:
+    st.session_state.chathistory = []
+
+st.title("💬 Chatbot")
+
+# Input area
+with st.form("chat_form", clear_on_submit=True):
+    user_input = st.text_input("You:", key="user_input")
+    submitted = st.form_submit_button("Submit")
+
+    if submitted and user_input.strip():
+        # Append user message
+        st.session_state.chathistory.append(("You", user_input))
+
+        # Get bot response
+        response = get_chat_response(user_input)
+        st.session_state.chathistory.append(("Bot", response))
+
+# Display chat history
+st.subheader("Chat History")
+for speaker, message in st.session_state.chathistory:
+    st.markdown(f"**{speaker}:** {message}")
+
+# Reset button
+if st.button("Reset Memory"):
+    st.session_state.chathistory = []
+    st.experimental_rerun()
