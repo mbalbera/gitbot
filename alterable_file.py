@@ -1,9 +1,8 @@
-def extract_table_name(create_statement: str) -> str:
-    match = re.search(r'CREATE TABLE\s+\[dbo\]\.\[(\w+)\]', create_statement, re.IGNORECASE)
-    if match:
-        return match.group(1)
-    else:
-        raise ValueError("Table name not found in the expected format.")
+with open(filepath, 'r', encoding='utf-8') as file:
+        content = file.read()
+
+    # Normalize whitespace for safety
+    content = ' '.join(content.split())
 
 Prompt: SQL Eligibility and Context Generator
 You are an AI system that determines whether a user message contains enough information to generate a valid SQL query. You have access to the following context via retrieval-augmented generation (RAG):
