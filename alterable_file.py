@@ -1,30 +1,16 @@
-def convert_sql_to_txt(sql_file_path, txt_file_path=None):
-    """
-    Converts a .sql file to a .txt file by copying its content.
+def convert_string(input_string):
+    # Split the string by underscores
+    words = input_string.split('_')
+    
+    # Capitalize each word, except for 'is' which stays in uppercase
+    result = ' '.join([word.capitalize() if word != 'is' else word.upper() for word in words])
+    
+    return result
 
-    Args:
-        sql_file_path (str): Path to the .sql file.
-        txt_file_path (str, optional): Path to the output .txt file.
-            If not provided, it uses the same name with a .txt extension.
-    """
-    if not sql_file_path.endswith('.sql'):
-        raise ValueError("Input file must have a .sql extension")
-
-    if txt_file_path is None:
-        txt_file_path = sql_file_path.rsplit('.', 1)[0] + '.txt'
-
-    try:
-        with open(sql_file_path, 'r', encoding='utf-8') as sql_file:
-            content = sql_file.read()
-
-        with open(txt_file_path, 'w', encoding='utf-8') as txt_file:
-            txt_file.write(content)
-
-        print(f"Converted '{sql_file_path}' to '{txt_file_path}' successfully.")
-    except FileNotFoundError:
-        print(f"File '{sql_file_path}' not found.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+# Example usage
+input_string = "hello_my_name_is"
+output_string = convert_string(input_string)
+print(output_string)
 
 
 Prompt: SQL Eligibility and Context Generator
