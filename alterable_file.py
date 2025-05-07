@@ -1,1 +1,7 @@
-ZWNtUXR1cVg3SDNlb0c2d3FPSjdqVW5JSmNpOUVNejF0eE5sSnpmTk51UXlvQzd4V2pJT2pzZ0FjMHI2U085MVU4ZWh5V2hpeG5YVzBOUTFGeWRXclBNbDI1NkNMRUp5bFNDa3VXRFZWV0hVdUxybmZkY3FjdW1nd1VGRFZ6aFprNXVuMXV1U3l3YWFEV0cwV1NGV1lNOUpqRE5nUGJwamZIVDJsZVhYTmc0YVhuaXVubDRWY1J1ODBYdGxYS1VYNVh5UUZya2tWT1gwcFgxVlJxVFlDMVg1TUdpRVFGN0N2b2FYaXpsVW5DemJUaElxYkw1eUdaZEhuM1ZCMDN1MFB0RmNsUzhNWU5UVXN2MjlFdjFPbnJBelB0WkVoNlg1MzVhelhieDM3OXhhUFRPa3EwZXRVSFR3TDdndnN0Z2FPV2owbHhBeU5SUkZZZFZWWnFTOTI0Q2Jva3NyMnBEU0dmeE14S3FManlNTXA3ajFpTTQ0V1J4aXhBYklUNzR5V0VodzZ2N1dYSkcyY3lnRA==
+my_array = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]
+
+with ThreadPoolExecutor(max_workers=5) as executor:
+    futures = [executor.submit(test, group) for group in chunks_of_five(my_array)]
+
+    for future in as_completed(futures):
+        result = future.result()
