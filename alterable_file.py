@@ -29,38 +29,38 @@ Return one of the following structured JSON responses:
 
 ### 1. Valid SQL Generated
 
-{
+{{
   "status": "success",
   "sql": "[SQLite-compatible SQL query as a string]",
-  "metadata": {
+  "metadata": {{
     "tables": ["table_name_1", "table_name_2"],
     "fields": [
-      { "name": "field1", "description": "..." },
-      { "name": "field2", "description": "..." }
+      {{ "name": "field1", "description": "..." }},
+      {{ "name": "field2", "description": "..." }}
     ],
     "filters_and_aggregations": "..."
-  }
-}
+  }}
+}}
 
 ---
 
 ### 2. Missing Required Schema Information
 
-{
+{{
   "status": "error",
   "error_type": "schema_missing",
   "message": "Required fields or tables were not found in the schema. Cannot generate SQL safely."
-}
+}}
 
 ---
 
 ### 3. Invalid or Incomplete Input
 
-{
+{{
   "status": "error",
   "error_type": "invalid_context",
   "message": "Provided metadata is incomplete or ambiguous. Unable to proceed with SQL generation."
-}
+}}
 
 ---
 
@@ -78,17 +78,17 @@ Context:
 
 ### Output
 
-{
+{{
   "status": "success",
   "sql": "SELECT category, COUNT(event_id) AS record_count FROM events WHERE timestamp >= DATE('now', '-30 days') GROUP BY category ORDER BY record_count DESC LIMIT 100;",
-  "metadata": {
+  "metadata": {{
     "tables": ["events"],
     "fields": [
-      { "name": "category", "description": "event type" },
-      { "name": "timestamp", "description": "date of event" },
-      { "name": "event_id", "description": "unique identifier" }
+      {{ "name": "category", "description": "event type" }},
+      {{ "name": "timestamp", "description": "date of event" }},
+      {{ "name": "event_id", "description": "unique identifier" }}
     ],
     "filters_and_aggregations": "Filter to the last 30 days using timestamp; group by category; count records"
-  }
-}
+  }}
+}}
 """
