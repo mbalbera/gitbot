@@ -1,28 +1,57 @@
-# streamlit_app.py
-import streamlit as st
-import requests
-import websocket
-import threading
+# server.py
+from fastapi import FastAPI, File, UploadFile, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
+import uuid
+import asyncio
 
-st.title("📄 Upload File for AI Processing")
+app = FastAPI()
 
-uploaded_file = st.file_uploader("Choose a text file", type=["txt", "md"])
-output_area = st.empty()
+# Let Streamlit frontend connect
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-if uploaded_file and st.button("🚀 Upload and Process"):
-    # Upload file to backend
-    files = {"file": (uploaded_file.name, uploaded_file, "text/plain")}
-    res = requests.post("http://localhost:8000/upload/", files=files)
-    session_id = res.json()["session_id"]
+clients = {}
 
-    # Start WebSocket to get real-time results
-    def on_message(ws, message):
-        output_area.text_area("📤 AI Output", value=message, height=300)
+@app.post("/upload/")
+async def upload_file(file: UploadFile = File(...)):
+    session_id = str(uuid.uuid4())
+    contents = await file.read()
 
-    ws = websocket.WebSocketApp(
-        f"ws://localhost:8000/ws/{session_id}",
-        on_message=on_message
-    )
+    # Start processing in background
+    asyncio.create_task(process_file(session_id, contents))
 
-    thread = threading.Thread(target=ws.run_forever)
-    thread.start()
+    return {"session_id": session_id}
+
+@app.websocket("/ws/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, session_id: str):
+    await websocket.accept()
+    clients[session_id] = websocket
+
+    try:
+        while True:
+            await asyncio.sleep(1)  # keep alive
+    except:
+        pass
+    finally:
+        clients.pop(session_id, None)
+
+async def process_file(session_id: str, contents: bytes):
+    # Simulated chunked AI processing
+    text = contents.decode("utf-8")
+    lines = text.splitlines()
+
+    ws = clients.get(session_id)
+    if not ws:
+        return
+
+    for i, line in enumerate(lines):
+        await asyncio.sleep(0.5)  # simulate work
+        if session_id in clients:
+            await ws.send_text(f"Chunk {i+1}: {line}")
+
+    await ws.send_text("✅ Done processing!")
+    await ws.close()
