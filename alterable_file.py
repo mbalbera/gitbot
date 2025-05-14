@@ -1,23 +1,31 @@
-# fastapi_server.py
-from fastapi import FastAPI, WebSocket
-import uvicorn
-import asyncio
+# streamlit_app.py
+import streamlit as st
+import websocket
+import threading
+import base64
 
-app = FastAPI()
+st.title("📁 Upload File (processed on backend)")
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        try:
-            chunk = await websocket.receive_text()
-            # Simulate AI parsing
-            await asyncio.sleep(0.5)
-            parsed = f"AI interpretation of: {chunk[:50]}..."
-            await websocket.send_text(parsed)
-        except Exception as e:
-            print("WebSocket closed:", e)
-            break
+uploaded_file = st.file_uploader("Upload a file", type=["txt", "md"])
 
-if __name__ == "__main__":
-    uvicorn.run("fastapi_server:app", host="0.0.0.0", port=8000)
+if uploaded_file is not None:
+    file_bytes = uploaded_file.read()
+    encoded = base64.b64encode(file_bytes).decode("utf-8")  # encode for WebSocket transmission
+
+    if st.button("🚀 Send to Backend"):
+        output = st.empty()
+
+        def on_message(ws, message):
+            output.success(f"✅ Server responded: {message}")
+
+        def on_open(ws):
+            ws.send(encoded)
+
+        ws = websocket.WebSocketApp(
+            "ws://localhost:8000/ws",
+            on_open=on_open,
+            on_message=on_message
+        )
+
+        thread = threading.Thread(target=ws.run_forever)
+        thread.start()
