@@ -1,31 +1,17 @@
-# streamlit_app.py
-import streamlit as st
-import websocket
-import threading
-import base64
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        encoded_data = await websocket.receive_text()
+        file_bytes = base64.b64decode(encoded_data)
+        
+        # Use in-memory file-like object
+        file_like = io.BytesIO(file_bytes)
+        contents = file_like.read().decode("utf-8")  # or keep as bytes if needed
 
-st.title("📁 Upload File (processed on backend)")
-
-uploaded_file = st.file_uploader("Upload a file", type=["txt", "md"])
-
-if uploaded_file is not None:
-    file_bytes = uploaded_file.read()
-    encoded = base64.b64encode(file_bytes).decode("utf-8")  # encode for WebSocket transmission
-
-    if st.button("🚀 Send to Backend"):
-        output = st.empty()
-
-        def on_message(ws, message):
-            output.success(f"✅ Server responded: {message}")
-
-        def on_open(ws):
-            ws.send(encoded)
-
-        ws = websocket.WebSocketApp(
-            "ws://localhost:8000/ws",
-            on_open=on_open,
-            on_message=on_message
-        )
-
-        thread = threading.Thread(target=ws.run_forever)
-        thread.start()
+        result = call_nuc(contents)
+        await websocket.send_text(result)
+    except Exception as e:
+        await websocket.send_text(f"❌ Error: {str(e)}")
+    finally:
+        await websocket.close()
