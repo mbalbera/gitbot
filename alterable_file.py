@@ -1,14 +1,1 @@
-clients = {}
-
-async def process_file(session_id, contents, call_nuc_fn):
-    ws = clients.get(session_id)
-    if not ws:
-        return
-
-    async def send_chunk(text):
-        if session_id in clients:
-            await ws.send_text(text)
-
-    await call_nuc_fn(contents, send_chunk)
-    await ws.close()
-    clients.pop(session_id, None)
+YzZqVlpoaHRtYVpaSkZBdkJDeHNjU2VMRlNkdDkwZk9WaExlRlppeDI2QW9Cc3ZRSTVVUEUxR1NkQ3NiSGNBOTE3czd3eVRxamNZNjJoOWdXNWRKQkE5OWxXeUlJQzU0MThqQUE2SlFqTHRhMGlrRlg3ck93YTY3V1lwMHVrNDNzbWJQTE5rcDlTSlZadHU5RHNyR0JPNTN5VmZjeEg4eE4zaWxpT295SlpaR3hiUU9sV3dsenozTTMxNGhiYThIcTk0SHNNUlRPT1VMMTdsMEJDTlpFZHFwYzF6bW9RM0dwbHMzNU9uY1gyaTRWRThRaWRXZjNJeUgya2hqV3hzUjRHVTZoaXBXTVhWTmVrWlZlVFQ4VFRwUTdoRWt2MkJQbmJ4VkJZaWVFbjZNa0w3Z1JMdmdpT0lxTWl4MnhKZmhVRFdsVDQzS0NYY0pMc3gxRkpaSTNUWXdOMEhTM25pWUw0UlAweW9kN21uM2xSdjZDblJ2OFQ3MHBkOUJVWldaQThLUEswQW4wcFpVM1owVw==
