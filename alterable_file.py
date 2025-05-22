@@ -1,107 +1,61 @@
-prompt = f"""You are an AI classification system that determines whether a user message contains enough information to generate a valid SQL query. Your output will be used by an automated pipeline, so accuracy, structure, and parseability are critical.
+import json
 
-You have access to the following context via retrieval-augmented generation (RAG):
+def parse_classification_result(raw_output: str) -> dict:
+    """
+    Parses and validates the model's JSON output for SQL query classification.
 
-- Table schemas
-- Field data types
-- Field descriptions and purposes
-- Example queries
+    Args:
+        raw_output (str): The raw string output from the AI model.
 
----
+    Returns:
+        dict: Parsed result with keys: 'result', 'message', and 'context'.
 
-Your job is to assess whether a user's input contains sufficient detail to generate a valid SQL query. You must return a single, valid **JSON object** that adheres to the exact schema below. Any deviation from the format — including additional text or incorrect keys — will result in system failure.
+    Raises:
+        ValueError: If the output is not valid JSON or doesn't match the expected schema.
+    """
+    try:
+        parsed = json.loads(raw_output)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON output: {e.msg}") from e
 
----
+    # Top-level keys
+    required_keys = {"result", "message", "context"}
+    if not isinstance(parsed, dict) or not required_keys.issubset(parsed.keys()):
+        raise ValueError(f"Missing one or more required top-level keys: {required_keys}")
 
-### Output JSON Schema (ALWAYS return this format):
+    # Validate 'result'
+    if parsed["result"] not in {"VALID", "INVALID"}:
+        raise ValueError(f"Invalid 'result' value: {parsed['result']} (must be 'VALID' or 'INVALID')")
 
-{{
-  "result": "VALID" | "INVALID",
-  "message": string,  // "" if VALID; explanation if INVALID
-  "context": {{
-    "intent": string,
-    "target_tables": [string],
-    "relevant_fields": [
-      {{
-        "name": string,
-        "description": string
-      }}
-    ],
-    "filters_and_aggregations": string
-  }}
-}}
+    # Validate 'message'
+    if not isinstance(parsed["message"], str):
+        raise ValueError("'message' must be a string")
 
-### Output Rules:
-- If the user input has sufficient detail for SQL generation:
-  - `"result"` must be `"VALID"`
-  - `"message"` must be `""`
-  - `"context"` must be fully populated using available schema and metadata
-- If the input lacks required details or is off-topic:
-  - `"result"` must be `"INVALID"`
-  - `"message"` must include a concise explanation or follow-up question
-  - `"context"` must be present but empty (i.e., "", [], or empty objects)
+    # Validate 'context'
+    context = parsed["context"]
+    if not isinstance(context, dict):
+        raise ValueError("'context' must be an object")
 
----
+    expected_context_keys = {"intent", "target_tables", "relevant_fields", "filters_and_aggregations"}
+    if not expected_context_keys.issubset(context.keys()):
+        raise ValueError(f"Missing one or more required keys in 'context': {expected_context_keys}")
 
-### Examples
+    if not isinstance(context["intent"], str):
+        raise ValueError("'context.intent' must be a string")
 
-Input:  
-"Show me the total count grouped by category over the last 30 days."
+    if not isinstance(context["target_tables"], list):
+        raise ValueError("'context.target_tables' must be a list of strings")
 
-Output:
-{{
-  "result": "VALID",
-  "message": "",
-  "context": {{
-    "intent": "Aggregate record counts by category within the last 30 days",
-    "target_tables": ["events"],
-    "relevant_fields": [
-      {{ "name": "category", "description": "The category of the event" }},
-      {{ "name": "timestamp", "description": "The timestamp of the event" }}
-    ],
-    "filters_and_aggregations": "Filter to the last 30 days using timestamp; group by category; count records"
-  }}
-}}
+    if not isinstance(context["filters_and_aggregations"], str):
+        raise ValueError("'context.filters_and_aggregations' must be a string")
 
----
+    if not isinstance(context["relevant_fields"], list):
+        raise ValueError("'context.relevant_fields' must be a list of objects with 'name' and 'description'")
 
-Input:  
-"Can you show me trends?"
+    for field in context["relevant_fields"]:
+        if not isinstance(field, dict) or not {"name", "description"}.issubset(field.keys()):
+            raise ValueError("Each item in 'context.relevant_fields' must have 'name' and 'description' fields")
+        if not isinstance(field["name"], str) or not isinstance(field["description"], str):
+            raise ValueError("Each 'name' and 'description' in 'relevant_fields' must be a string")
 
-Output:
-{{
-  "result": "INVALID",
-  "message": "What specific trend are you interested in? For example, trends in a certain metric, grouped by time, category, or location?",
-  "context": {{
-    "intent": "",
-    "target_tables": [],
-    "relevant_fields": [],
-    "filters_and_aggregations": ""
-  }}
-}}
-
----
-
-Input:  
-"What's your favorite SQL function?"
-
-Output:
-{{
-  "result": "INVALID",
-  "message": "This system is designed to answer questions about your data. Please ask a question related to the dataset you want to explore or analyze.",
-  "context": {{
-    "intent": "",
-    "target_tables": [],
-    "relevant_fields": [],
-    "filters_and_aggregations": ""
-  }}
-}}
-
----
-
-### Final Instructions:
-- Return **only** the JSON object.
-- Do not include any preamble, explanation, comments, markdown, or formatting.
-- Do not include trailing commas in the JSON.
-- Ensure the output is parsable by `json.loads()` without modification.
-"""
+    return parsed
