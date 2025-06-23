@@ -1,29 +1,35 @@
-{
-  "job_name": "etl_csv_pipeline",
-  "steps": [
-    {
-      "step": "load_csv",
-      "input": "data.csv",
-      "status": "success",
-      "columns": ["id", "name", "value"]
-    },
-    {
-      "step": "drop_nulls",
-      "operation": "df.dropna(subset=['value'])",
-      "status": "success"
-    },
-    {
-      "step": "transform",
-      "operation": "df['value'] = df['value'].astype(int); df['tax'] = df['value'] * 0.1",
-      "status": "success"
-    },
-    {
-      "step": "rename_columns",
-      "operation": "df.rename(columns={'nonexistent_col': 'new_col'})",
-      "status": "failed",
-      "error": "KeyError: \"['nonexistent_col'] not found in axis\""
-    }
-  ],
-  "timestamp": "2025-06-20T15:23:45.000Z",
-  "error": "KeyError: \"['nonexistent_col'] not found in axis\""
-}
+id,name,value
+1,Alice,100
+2,Bob,
+3,Charlie,abc
+4,David,200
+5,Eve,300
+6,Frank,xyz
+7,Grace,150
+8,Hank,175
+9,Ivy,
+10,Jack,50
+11,Kate,250
+12,Liam,
+13,Mia,abc
+14,Noah,400
+15,Olivia,350
+16,Paul,600
+17,Quinn,750
+18,Rachel,def
+19,Steve,900
+20,Tina,1000
+21,Uma,1100
+22,Vince,
+23,Wendy,xyz
+24,Xander,1300
+25,Yara,1400
+26,Zane,1500
+27,Ava,not_a_number
+28,Ben,1600
+29,Chloe,1700
+30,Dylan,abc
+id,name,value
+1,Alice,100
+2,Bob,
+3,Charlie,abc
