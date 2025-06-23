@@ -1,34 +1,42 @@
 import json
-import uuid
-from datetime import datetime
-import traceback
-import os
 
-def emit_lineage(job_name, system, environment, step_name, operation=None, status="success", error=None, inputs=None, outputs=None, lineage_file="lineage.json"):
-    lineage = {
-        "job_name": job_name,
-        "run_id": str(uuid.uuid4()),
-        "timestamp": datetime.utcnow().isoformat(),
-        "system": system,
-        "environment": environment,
-        "steps": [{
-            "step": step_name,
-            "operation": operation,
-            "status": status,
-            "error": error
-        }],
-        "inputs": inputs or [],
-        "outputs": outputs or []
-    }
+with open("lineage.json") as f:
+    lineage = json.load(f)
 
-    if os.path.exists(lineage_file):
-        with open(lineage_file) as f:
-            try:
-                existing = json.load(f)
-                existing["steps"].append(lineage["steps"][0])
-                lineage = existing
-            except Exception:
-                pass  # corrupted or malformed file
+print("\n🧠 NUCLEUS DIAGNOSTICS REPORT\n===============================")
+print(f"Job: {lineage.get('job_name')}")
+print(f"Run ID: {lineage.get('run_id')}")
+print(f"System: {lineage.get('system')} | Env: {lineage.get('environment')}")
+print(f"Timestamp: {lineage.get('timestamp')}\n")
 
-    with open(lineage_file, "w") as f:
-        json.dump(lineage, f, indent=2)
+steps = lineage.get("steps", [])
+
+for i, step in enumerate(steps):
+    print(f"Step {i+1}: {step.get('step')} | Status: {step.get('status')}\n")
+    if step.get("operation"):
+        print(f"  Operation: {step['operation']}")
+
+    if step.get("status") == "failed":
+        print(f"  ❌ Failure Detected:")
+        print(f"  Error: {step['error'].splitlines()[-1]}")
+
+        # NUCLEUS-powered suggestions
+        print("\n  🤖 NUCLEUS Suggests:")
+
+        error = step.get("error", "")
+
+        if "KeyError" in error:
+            print("  - Check if the referenced column exists in the DataFrame.")
+            print("  - Use df.columns to inspect available columns before renaming.")
+
+        elif "ValueError" in error and "int" in error:
+            print("  - Invalid type conversion. Use pd.to_numeric(..., errors='coerce') before astype(int).")
+            print("  - Add logging to check values in 'value' column before converting.")
+
+        elif "PermissionError" in error:
+            print("  - Confirm the destination has write permissions and credentials are correct.")
+
+        else:
+            print("  - Review the full stack trace and validate input/output integrity.")
+
+    print("\n----------------------------------------")
