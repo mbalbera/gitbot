@@ -1,35 +1,37 @@
-id,name,value
-1,Alice,100
-2,Bob,
-3,Charlie,abc
-4,David,200
-5,Eve,300
-6,Frank,xyz
-7,Grace,150
-8,Hank,175
-9,Ivy,
-10,Jack,50
-11,Kate,250
-12,Liam,
-13,Mia,abc
-14,Noah,400
-15,Olivia,350
-16,Paul,600
-17,Quinn,750
-18,Rachel,def
-19,Steve,900
-20,Tina,1000
-21,Uma,1100
-22,Vince,
-23,Wendy,xyz
-24,Xander,1300
-25,Yara,1400
-26,Zane,1500
-27,Ava,not_a_number
-28,Ben,1600
-29,Chloe,1700
-30,Dylan,abc
-id,name,value
-1,Alice,100
-2,Bob,
-3,Charlie,abc
+from functools import wraps
+from lineage_tracker import emit_lineage
+import traceback
+
+def lineage_step(job_name, system="default_system", environment="dev", step_name="unnamed_step", operation=None, inputs=None, outputs=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                result = func(*args, **kwargs)
+                emit_lineage(
+                    job_name=job_name,
+                    system=system,
+                    environment=environment,
+                    step_name=step_name,
+                    operation=operation,
+                    status="success",
+                    inputs=inputs,
+                    outputs=outputs
+                )
+                return result
+            except Exception as e:
+                error_log = traceback.format_exc()
+                emit_lineage(
+                    job_name=job_name,
+                    system=system,
+                    environment=environment,
+                    step_name=step_name,
+                    operation=operation,
+                    status="failed",
+                    error=error_log,
+                    inputs=inputs,
+                    outputs=outputs
+                )
+                raise
+        return wrapper
+    return decorator
