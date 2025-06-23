@@ -1,37 +1,34 @@
-from functools import wraps
-from lineage_tracker import emit_lineage
+import json
+import uuid
+from datetime import datetime
 import traceback
+import os
 
-def lineage_step(job_name, system="default_system", environment="dev", step_name="unnamed_step", operation=None, inputs=None, outputs=None):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
+def emit_lineage(job_name, system, environment, step_name, operation=None, status="success", error=None, inputs=None, outputs=None, lineage_file="lineage.json"):
+    lineage = {
+        "job_name": job_name,
+        "run_id": str(uuid.uuid4()),
+        "timestamp": datetime.utcnow().isoformat(),
+        "system": system,
+        "environment": environment,
+        "steps": [{
+            "step": step_name,
+            "operation": operation,
+            "status": status,
+            "error": error
+        }],
+        "inputs": inputs or [],
+        "outputs": outputs or []
+    }
+
+    if os.path.exists(lineage_file):
+        with open(lineage_file) as f:
             try:
-                result = func(*args, **kwargs)
-                emit_lineage(
-                    job_name=job_name,
-                    system=system,
-                    environment=environment,
-                    step_name=step_name,
-                    operation=operation,
-                    status="success",
-                    inputs=inputs,
-                    outputs=outputs
-                )
-                return result
-            except Exception as e:
-                error_log = traceback.format_exc()
-                emit_lineage(
-                    job_name=job_name,
-                    system=system,
-                    environment=environment,
-                    step_name=step_name,
-                    operation=operation,
-                    status="failed",
-                    error=error_log,
-                    inputs=inputs,
-                    outputs=outputs
-                )
-                raise
-        return wrapper
-    return decorator
+                existing = json.load(f)
+                existing["steps"].append(lineage["steps"][0])
+                lineage = existing
+            except Exception:
+                pass  # corrupted or malformed file
+
+    with open(lineage_file, "w") as f:
+        json.dump(lineage, f, indent=2)
