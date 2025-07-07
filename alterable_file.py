@@ -1,14 +1,5 @@
-Analyze the following SQL and output a JSON representation of data lineage. Use the following format:
+Analyze the following SQL and output a JSON representation of data lineage using this structure:
 
-entities: a list of all tables/views.
-
-Each entity has name, type ("table" or "view"), fields, and optional relations.
-
-relations contain to (target entity name) and on (list of shared columns or pairs like [["local", "foreign"]]).
-
-Ensure consistent formatting, no redundant data, and lowercase keys. Use the simplified structure below:
-
-```json
 {
   "entities": [
     {
@@ -22,10 +13,14 @@ Ensure consistent formatting, no redundant data, and lowercase keys. Use the sim
     }
   ]
 }
-```
-SQL to analyze:
 
-```sql
-{sql}
-```
+Rules:
+- All keys should be lowercase.
+- Omit null or empty keys (e.g. no `relations` if none exist).
+- Be consistent and concise.
+- Include field names even if not joined on.
+- Use full entity names including schema (like `Sales.Product`).
 
+Now analyze this SQL:
+
+{chunk}
