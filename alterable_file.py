@@ -1,26 +1,33 @@
-Analyze the following SQL and output a JSON representation of data lineage using this structure:
+Analyze the following SQL and output a consistent JSON representation of data lineage with this format:
 
-{
+{{
   "entities": [
-    {
+    {{
       "name": "Schema.TableName",
       "type": "table" or "view",
       "fields": ["field1", "field2"],
       "relations": [
-        {"to": "OtherSchema.OtherTable", "on": ["fieldName"]},
-        {"to": "OtherSchema.AnotherTable", "on": [["localField", "foreignField"]]}
+        {{
+          "source_table": "Schema.SourceTable",
+          "field": "source_column",
+          "target_table": "Schema.TargetTable",
+          "field": "target_column"
+        }}
       ]
-    }
+    }}
   ]
-}
+}}
 
-Rules:
-- All keys should be lowercase.
-- Omit null or empty keys (e.g. no `relations` if none exist).
-- Be consistent and concise.
-- Include field names even if not joined on.
-- Use full entity names including schema (like `Sales.Product`).
+Guidelines:
+- All keys must be lowercase.
+- Use full table names including schema (e.g. "Sales.Product").
+- Include fields that appear in SELECT, JOINs, or are referenced.
+- Only include "relations" if that entity joins to another.
+- Each relation represents a one-way join: source → target, including column names.
+- Do not omit required fields, even if not joined on.
+- Return valid, compact JSON.
 
 Now analyze this SQL:
 
-{chunk}
+{sql}
+"""
