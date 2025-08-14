@@ -1,1 +1,14 @@
-bkI1UXNpMWdhcms1b0hEamFRMXhKRDRiSTlXY3ZYbmh6b2k1S0pFRDRIWmR1ZnJ1aVZ0WGFhZW9OTEJhZjViS1pJb3o3MlREMjJXcHFnYThPeGNRM2ZvUFVrZTBQWGxXdVpHUDFoWmNINXByMGlOY0RweTBwQjNaRWlLY2pYMkJLcFB4V2xjbEdXcVA1VUpxQ21LQ09MaGJZNDNrdFJQSUI4M1ZnSU1CaDdoWXV4MWRyakEydVdGNnVKM3N3VGxYU2hGRU9hdU40Zm1qSEJZUDFhZFl5TTZUZUNaa0xrNHlUbk02azRDeE1yTXN4MTZtcmhCSkIxWDl3a3hKQlZLNVJmYUF0WXVpdkpVRmdzcVlISUZnS254clYxQUpRTThzaDBVb0pKUjY2Q0ZIWm9BaXBsVUZiNVhEU1hUYXVYTVdJRXFoZXdsZ1BsZUNRTVJGVmFpVFF0WU1xNGR0VU54Z2hEMXdqQUlsSHJyUXNBSDVlSmpEN1hzYjR0Q2EyQlEzV2g4RUl6TWtaV00wbGxyWQ==
+
+data = ["Apple", "Banana", "Cherry"]  # or data = "Just a string"
+
+if isinstance(data, list) and all(isinstance(x, str) for x in data):
+    st.write("Choose an option:")
+    for item in data:
+        if st.button(item):
+            st.write(f"You clicked: {item}")
+
+elif isinstance(data, str):
+    st.write(f"Received a single string: {data}")
+    # Do something else here
+else:
+    st.error("Unexpected data format.")
