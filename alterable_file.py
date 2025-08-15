@@ -1,14 +1,1 @@
-
-data = ["Apple", "Banana", "Cherry"]  # or data = "Just a string"
-
-if isinstance(data, list) and all(isinstance(x, str) for x in data):
-    st.write("Choose an option:")
-    for item in data:
-        if st.button(item):
-            st.write(f"You clicked: {item}")
-
-elif isinstance(data, str):
-    st.write(f"Received a single string: {data}")
-    # Do something else here
-else:
-    st.error("Unexpected data format.")
+NlF6RlZDUGVUZEZKV1VlYXY1VlZxeVFpdWFtMTVrNDBkUzVETkNsZTZKM1ZkUXRubjAwbWl6VWE3M09GbGp5ekc4QUtlN0NwaXVqOExyNXVOM293RzM3a056VkhGc1VWWU12S1hpWlhwZVpMQzc0ZVN0QzhMNGhEWm1MUURUSU45TW5rSTFJZjZEek1iZVRRZ1kzd1R3dGp0QzJveUM3bk1vM2ltOFNNUmdsWTlNUXNQemR0ZzdPSGgwTWZRQjlFS3Vhdm5jeDJlQ3hzWGRSeWVmOXlWRlhSRkVqMFBpZ0JxY2lCckk4eG4yZEhOT3d0cTQxNjhCTmZMOHlJamdRYVFrQlhlNzZ3VTE1QXE2S2Q0N0ZXckFPTkhHUGh6dDVlWERDN1lLcVozbWlHTWFOQzJVZk5qYzlDTmNXYllrM1Z6MWppbGJpTUtZWFZhRFppNjZ4MW0zUW13dU1FMXJKREJlY1dwUEF6aTJsT2djRmhuelNMVWZ3YlFUeHdPNm9mRHpNZ3N5RDJKYzhvZjB0TQ==
