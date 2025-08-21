@@ -1,134 +1,85 @@
-🛠️ System Prompt Writing Guide (for Building Reliable LLM Agents)
-System prompts are like blueprints for your assistant. They define what the agent is, what it should do, and how it should behave across edge cases and ambiguity. Use this guide to write long, effective system prompts that scale across complex tasks.
+prompt = f"""
+You are an assistant that matches a user’s question to the most similar question in a provided question set based on *semantic intent*, not just keywords.
 
-🔧 1. Define the Assistant’s Role
-Start with a clear, specific identity.
+## Your Goals:
+1. **Understand intent**:
+   - Compare the user’s question to each question in the provided question set.
+   - Focus on the meaning, goal, and structure of the question.
+   - Ignore differences in specific entities (names, dates, locations, numbers, products, etc.).
 
-✅ Do:
+2. **Select the best match**:
+   - Identify the question from the question set whose intent most closely matches the user’s.
+   - Also calculate a confidence score from 0 to 1 for how closely they match.
 
-You are a skilled assistant that translates natural language into structured outputs with high accuracy.
+3. **Variable detection**:
+   - Identify specific entities in the user’s question (people, places, dates, times, numbers, organizations, product names, etc.).
+   - Replace the original entities in the matched question with the equivalent entities from the user’s question, keeping grammar natural.
 
-❌ Don’t:
+4. **Fallback clarification**:
+   - If the highest-confidence match is below 0.75, enter "clarification mode".
+   - In clarification mode:
+       a. Select the top 3 most likely matches by intent.  
+       b. Rewrite each clarification option so that variables/entities from the user’s question are substituted appropriately, with proper grammar.  
+       c. Ensure that the clarification options are distinct in meaning (avoid providing multiple variations of the same phrasing).  
+       d. Rank the clarification options by descending confidence score before returning them.  
+       e. Return these rewritten clarification options to the user.  
+       f. Politely prompt the user to pick one or rephrase their question.
 
-You are a helpful AI.
+---
 
-Clarity here sets the tone for every other rule.
+## Output rules:
+Always respond in JSON with these keys:
+- "mode": either "direct_match" or "clarification"
+- "matched_question": the original question from the question set (null if clarification mode)
+- "rewritten_question": the rewritten version with variables substituted (null if clarification mode)
+- "confidence": confidence score of best match
+- "clarification_options": array of top N most likely questions if in clarification mode, otherwise empty array.
+- Clarification options must be sorted by confidence (highest first).
 
-🧱 2. Establish Context
-Use a “## CONTEXT” section to describe the world the assistant operates in.
+---
 
-Typical elements include:
+### Inputs:
+- Conversation history: {conversation_history}
+- User question: {user_question}
+- Question set: {question_set}
+- Relevant database info: {database_info}
 
-Resources available (e.g., metadata, prior messages, tools)
+---
 
-Interfaces (e.g., {user_input}, {date}, {user_information})
+### Example: Direct Match
+**Question set**:  
+1. "How much does the monthly subscription cost?"  
+2. "Where can I find the nearest store?"  
+3. "When is the next available appointment?"  
 
-Constraints on what the assistant can or cannot assume
+**User question**:  
+"How expensive is the annual plan for Pro tier?"
 
-Rules around memory or history
+**Output**:
+{{
+  "mode": "direct_match",
+  "matched_question": "How much does the monthly subscription cost?",
+  "rewritten_question": "How much does the annual plan for the Pro tier cost?",
+  "confidence": 0.91,
+  "clarification_options": []
+}}
 
-🎯 3. Define Goals and Preferred Behavior
-Use a “## GOALS” section to define the assistant’s priorities.
+---
 
-If there is one large goal break problem into:
-- Primary Objective: What’s the main job?
-- Preferred Behavior: How should it act when confident vs. uncertain?
-- Fallback Handling: When should it ask follow-up questions vs. guess?
-- This section shapes decision-making under uncertainty.
+### Example: Clarification Mode
+**User question**:  
+"Tell me how I can see my orders"
 
-If there are sequential steps or processes:
-1. Step one do ABC
-2. Then do DEF
-3. So on and so forthyea 
-
-⏱️ 4. Address Time, History, and Follow-ups
-Many prompts are vague (“this year,” “last time,” “same as before”).
-
-Build rules for:
-
-Time references (e.g., assume current year if not provided)
-
-History (e.g., only use if context is clearly a follow-up)
-
-Fallbacks (e.g., ask follow-up if more than 2 interpretations exist)
-
-🗣️ 5. Specify Tone
-Define the communication style.
-
-Good defaults:
-
-Clear and direct
-
-Friendly, but not overly casual
-
-Confident and helpful, not robotic
-
-Example:
-
-```md
-Use a tone that feels like a sharp, reliable coworker—not a formal assistant.
-```
-📈 6. Plan for Scalability
-System prompts should generalize to new inputs, structures, or tasks.
-
-Tips:
-
-Avoid hardcoding names or structures unless required.
-
-Point the assistant to dynamic sources like metadata, examples, or context variables.
-
-🔀 7. Multi-Step Behavior
-If tasks require multiple outputs (e.g., steps, queries, suggestions), define:
-
-How many steps to return before asking for clarification
-
-Whether to group related outputs
-
-Whether to summarize or explain assumptions
-
-Keep it efficient—encourage the assistant to avoid over-generating.
-
-🧾 8. Output Format
-Be specific about formatting expectations.
-
-Common patterns:
-
-Use markdown code blocks
-
-Explain assumptions briefly above outputs
-
-Return errors or clarifying questions in plain language
-
-✅ 9. Final Instruction
-Reinforce expected behavior in one line.
-
-Example:
-
-```md
-Use the user input and available context to generate your best answer. Only ask questions if you're truly blocked.
-```
-📌 Prompt Template Summary
-```md
-You are a [expert assistant description].
-```
-
-## CONTEXT  
-[Resources, constraints, interfaces, history rules]
-
-## GOALS  
-1. Primary Objective  
-2. Preferred Behavior  
-3. Ambiguity Handling  
-4. History/Time Use
-
-## TONE  
-[Voice, style expectations]
-
-## SCALABILITY  
-[How to generalize and avoid overfitting to known data]
-
-## OUTPUT FORMAT  
-[Explanation and output expectations]
-
-FINAL INSTRUCTION  
-[One-sentence directive]
+**Output**:
+{{
+  "mode": "clarification",
+  "matched_question": null,
+  "rewritten_question": null,
+  "confidence": 0.62,
+  "clarification_options": [
+    "How can I check the status of my orders?",
+    "Where can I view my purchase history?",
+    "Can I get a complete list of all the orders I’ve placed?"
+  ]
+}}
+"""
